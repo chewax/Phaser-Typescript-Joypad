@@ -247,6 +247,21 @@ module Gamepads {
             var deltaY = this.pointer.position.y - this.initialPoint.y;
 
             if (this.settings.singleDirection){
+
+                if (d < maxDistanceInPixels) {
+
+                    this.cursors.up = false;
+                    this.cursors.down = false;
+                    this.cursors.left = false;
+                    this.cursors.right = false;
+
+                    this.speed.x = 0;
+                    this.speed.y = 0;
+
+                    return;
+                }
+
+
                 if(Math.abs(deltaX) > Math.abs(deltaY)){
                     deltaY = 0;
                     this.pointer.position.y = this.initialPoint.y;
