@@ -113,6 +113,7 @@ module Gamepads {
 
         static preloadAssets (game:Phaser.Game, assets_path:string): void {
             Gamepads.Joystick.preloadAssets(game, assets_path);
+            Gamepads.ButtonPad.preloadAssets(game, assets_path);
         }
 
     }
