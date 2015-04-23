@@ -234,11 +234,7 @@ module Gamepads {
         }
 
 
-        /**
-         * @function setDirection
-         * Main Plugin function. Performs the calculations and updates the sprite positions
-         */
-        private setDirection (): void {
+        private setSingleDirection(): void{
 
             var d = this.initialPoint.distance(this.pointer.position);
             var maxDistanceInPixels = this.settings.maxDistanceInPixels;
@@ -246,33 +242,31 @@ module Gamepads {
             var deltaX = this.pointer.position.x - this.initialPoint.x;
             var deltaY = this.pointer.position.y - this.initialPoint.y;
 
-            if (this.settings.singleDirection){
+            if (d < maxDistanceInPixels) {
+                this.cursors.up = false;
+                this.cursors.down = false;
+                this.cursors.left = false;
+                this.cursors.right = false;
 
-                if (d < maxDistanceInPixels) {
-                    this.cursors.up = false;
-                    this.cursors.down = false;
-                    this.cursors.left = false;
-                    this.cursors.right = false;
+                this.speed.x = 0;
+                this.speed.y = 0;
 
-                    this.speed.x = 0;
-                    this.speed.y = 0;
+                this.imageGroup.forEach(function(e,i){
+                    e.cameraOffset.x = this.initialPoint.x + (deltaX) * i / (this.imageGroup.length - 1);
+                    e.cameraOffset.y = this.initialPoint.y + (deltaY) * i / (this.imageGroup.length - 1);
+                }, this);
 
-                    this.imageGroup.forEach(function(e,i){
-                        e.cameraOffset.x = this.initialPoint.x + (deltaX) * i / (this.imageGroup.length - 1);
-                        e.cameraOffset.y = this.initialPoint.y + (deltaY) * i / (this.imageGroup.length - 1);
-                    }, this);
+                return;
+            };
 
-                    return;
-                };
-
-                if (Math.abs(deltaX) > Math.abs(deltaY)){
-                    deltaY = 0;
-                    this.pointer.position.y = this.initialPoint.y;
-                } else {
-                    deltaX = 0;
-                    this.pointer.position.x = this.initialPoint.x;
-                }
+            if (Math.abs(deltaX) > Math.abs(deltaY)){
+                deltaY = 0;
+                this.pointer.position.y = this.initialPoint.y;
+            } else {
+                deltaX = 0;
+                this.pointer.position.x = this.initialPoint.x;
             }
+
 
             var angle = this.initialPoint.angle(this.pointer.position);
 
@@ -283,10 +277,76 @@ module Gamepads {
                 deltaY = Math.sin(angle) * maxDistanceInPixels;
 
                 if (this.settings.float) {
-
                     this.initialPoint.x = this.pointer.x - deltaX;
                     this.initialPoint.y = this.pointer.y - deltaY;
 
+                }
+            }
+
+            this.speed.x = Math.round( Math.cos(angle) * this.settings.topSpeed);
+            this.speed.y = Math.round( Math.sin(angle) * this.settings.topSpeed);
+
+            angle = angle * 180 / Math.PI;
+
+            this.cursors.up = angle == -90;
+            this.cursors.down = angle == 90;
+            this.cursors.left = angle == 180;
+            this.cursors.right = angle == 0;
+
+            this.imageGroup.forEach(function(e,i){
+                e.cameraOffset.x = this.initialPoint.x + (deltaX) * i / (this.imageGroup.length - 1);
+                e.cameraOffset.y = this.initialPoint.y + (deltaY) * i / (this.imageGroup.length - 1);
+            }, this);
+
+        }
+
+        /**
+         * @function setDirection
+         * Main Plugin function. Performs the calculations and updates the sprite positions
+         */
+        private setDirection (): void {
+
+            if (this.settings.singleDirection) {
+                this.setSingleDirection();
+                return;
+            }
+
+            var d = this.initialPoint.distance(this.pointer.position);
+            var maxDistanceInPixels = this.settings.maxDistanceInPixels;
+
+            var deltaX = this.pointer.position.x - this.initialPoint.x;
+            var deltaY = this.pointer.position.y - this.initialPoint.y;
+
+            if (!this.settings.analog) {
+
+                if (d < maxDistanceInPixels) {
+                    this.cursors.up = false;
+                    this.cursors.down = false;
+                    this.cursors.left = false;
+                    this.cursors.right = false;
+
+                    this.speed.x = 0;
+                    this.speed.y = 0;
+
+                    this.imageGroup.forEach(function (e, i) {
+                        e.cameraOffset.x = this.initialPoint.x + (deltaX) * i / (this.imageGroup.length - 1);
+                        e.cameraOffset.y = this.initialPoint.y + (deltaY) * i / (this.imageGroup.length - 1);
+                    }, this);
+
+                    return;
+                }
+            }
+
+            var angle = this.initialPoint.angle(this.pointer.position);
+
+            if (d > maxDistanceInPixels){
+
+                deltaX = Math.cos(angle) * maxDistanceInPixels;
+                deltaY = Math.sin(angle) * maxDistanceInPixels;
+
+                if (this.settings.float) {
+                    this.initialPoint.x = this.pointer.x - deltaX;
+                    this.initialPoint.y = this.pointer.y - deltaY;
                 }
             }
 
@@ -311,6 +371,7 @@ module Gamepads {
                 e.cameraOffset.x = this.initialPoint.x + (deltaX) * i / (this.imageGroup.length - 1);
                 e.cameraOffset.y = this.initialPoint.y + (deltaY) * i / (this.imageGroup.length - 1);
             }, this);
+
 
         }
 
