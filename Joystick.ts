@@ -249,7 +249,6 @@ module Gamepads {
             if (this.settings.singleDirection){
 
                 if (d < maxDistanceInPixels) {
-
                     this.cursors.up = false;
                     this.cursors.down = false;
                     this.cursors.left = false;
@@ -258,18 +257,23 @@ module Gamepads {
                     this.speed.x = 0;
                     this.speed.y = 0;
 
+                    this.imageGroup.forEach(function(e,i){
+                        e.cameraOffset.x = this.initialPoint.x + (deltaX) * i / (this.imageGroup.length - 1);
+                        e.cameraOffset.y = this.initialPoint.y + (deltaY) * i / (this.imageGroup.length - 1);
+                    }, this);
+
                     return;
-                }
+                };
 
-
-                if(Math.abs(deltaX) > Math.abs(deltaY)){
+                if (Math.abs(deltaX) > Math.abs(deltaY)){
                     deltaY = 0;
                     this.pointer.position.y = this.initialPoint.y;
-                }else{
+                } else {
                     deltaX = 0;
                     this.pointer.position.x = this.initialPoint.x;
                 }
             }
+
             var angle = this.initialPoint.angle(this.pointer.position);
 
 
