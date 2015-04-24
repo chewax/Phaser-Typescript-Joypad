@@ -267,7 +267,6 @@ module Gamepads {
                 this.pointer.position.x = this.initialPoint.x;
             }
 
-
             var angle = this.initialPoint.angle(this.pointer.position);
 
 

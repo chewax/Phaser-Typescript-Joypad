@@ -2,14 +2,17 @@
 /// <reference path="Joystick.ts"/>
 /// <reference path="Button.ts"/>
 /// <reference path="ButtonPad.ts"/>
+/// <reference path="TouchInput.ts"/>
 
 module Gamepads {
 
-    export enum GampadType {
+    export enum GamepadType {
         SINGLE_STICK = 1,
         DOUBLE_STICK = 2,
         STICK_BUTTON = 3,
-        CORNER_STICKS = 4
+        CORNER_STICKS = 4,
+        GESTURE_BUTTON = 5,
+        GESTURE = 6
     }
 
     export class GamePad extends Phaser.Plugin {
@@ -22,30 +25,39 @@ module Gamepads {
         stick4: Gamepads.Joystick;
 
         buttonPad: Gamepads.ButtonPad;
+        touchInput: Gamepads.TouchInput;
 
         info: Phaser.Text;
         test: number = 0;
 
 
-        constructor (game: Phaser.Game, type:GampadType, buttonPadType?: Gamepads.ButtonPadType) {
-            super(game, new PIXI.DisplayObject() );
+        constructor (game: Phaser.Game, type:GamepadType, buttonPadType?: Gamepads.ButtonPadType) {
+            super(game, new PIXI.DisplayObject());
             this.game = game;
 
             switch (type){
-                case GampadType.DOUBLE_STICK:
+                case GamepadType.DOUBLE_STICK:
                     this.initDoublStick();
                     break;
 
-                case GampadType.SINGLE_STICK:
+                case GamepadType.SINGLE_STICK:
                     this.initSingleStick();
                     break;
 
-                case GampadType.STICK_BUTTON:
+                case GamepadType.STICK_BUTTON:
                     this.initStickButton(buttonPadType);
                     break;
 
-                case GampadType.CORNER_STICKS:
+                case GamepadType.CORNER_STICKS:
                     this.initCornerSticks();
+                    break;
+
+                case GamepadType.GESTURE_BUTTON:
+                    this.initGestureButton();
+                    break;
+
+                case GamepadType.GESTURE:
+                    this.initGesture();
                     break;
 
             }
@@ -86,29 +98,18 @@ module Gamepads {
         }
 
         initStickButton(buttonPadType: Gamepads.ButtonPadType): void{
-
-            var style = { font: "14px Courier", fill: "#ffffff", align: "left" };
-            this.info = this.game.add.text(this.game.world.centerX, this.game.world.centerY, '0', style);
-
-
             this.stick1 = new Gamepads.Joystick(this.game, Gamepads.Sectors.HALF_LEFT);
             this.game.add.plugin(this.stick1, null);
-
             this.buttonPad = new Gamepads.ButtonPad(this.game, buttonPadType, 100);
+        }
 
+        initGestureButton(buttonPadType: Gamepads.ButtonPadType){
+            this.touchInput = new Gamepads.TouchInput(this.game, Gamepads.Sectors.HALF_LEFT);
+            this.buttonPad = new Gamepads.ButtonPad(this.game, buttonPadType, 100);
+        }
 
-            function pressTest() {
-                this.test += 1;
-                this.info.text = this.test.toString();
-            }
-
-            //FOR TESTING
-            this.buttonPad.button1.setOnPressedCallback(pressTest,this);
-            //this.buttonPad.button2.setOnPressedCallback(pressTest,this);
-            //this.buttonPad.button3.setOnPressedCallback(pressTest,this);
-            //this.buttonPad.button4.setOnPressedCallback(pressTest,this);
-            //this.buttonPad.button5.setOnPressedCallback(pressTest,this);
-
+        initGesture(){
+            this.touchInput = new Gamepads.TouchInput(this.game, Gamepads.Sectors.ALL);
         }
 
         static preloadAssets (game:Phaser.Game, assets_path:string): void {
