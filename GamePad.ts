@@ -53,7 +53,7 @@ module Gamepads {
                     break;
 
                 case GamepadType.GESTURE_BUTTON:
-                    this.initGestureButton();
+                    this.initGestureButton(buttonPadType);
                     break;
 
                 case GamepadType.GESTURE:
