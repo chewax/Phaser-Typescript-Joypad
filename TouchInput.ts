@@ -23,7 +23,7 @@ module Gamepads {
         public swipeLeftCallback: Function;
         public swipeRightCallback: Function;
         public onTouchDownCallback: Function;
-        public onTouchReleaseCallback(time: number): Function;
+        public onTouchReleaseCallback: (elapsedTime:number) => any;
 
         ////Public Properties
         public sector: Sectors;
@@ -135,8 +135,6 @@ module Gamepads {
 
             this.screenPressed = false;
             var elapsedTime = this.game.time.elapsedSecondsSince(this.touchTimer);
-
-            console.log(elapsedTime);
 
             if (this.touchType == TouchInputType.TOUCH) {
                 this.onTouchReleaseCallback(elapsedTime);
