@@ -1,8 +1,7 @@
 # Phaser-Typescript-Joypad
 
 
-This is a phaser plugin to handle the user input in a tactile screen in the fashion of a console Joypad.
-
+This is a phaser plugin to handle the user input in a tactile screen in the fashion of a console Joypad. It has been based on the repo of eugenioclrc: https://github.com/eugenioclrc/phaser-touch-control-plugin.
 
 Usage
 -----
